@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		235520691E389369000D1A3B /* AlbumListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 235520681E389369000D1A3B /* AlbumListView.swift */; };
+		2389751F1E48B069005B95A5 /* placeHolder.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 2389751E1E48B069005B95A5 /* placeHolder.jpg */; };
+		238975211E48C012005B95A5 /* AlbumCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 238975201E48C012005B95A5 /* AlbumCollectionView.swift */; };
+		23DCD5141E39F801005EB1BD /* ConvenienceConstant.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23DCD5131E39F801005EB1BD /* ConvenienceConstant.swift */; };
 		8FABD8E31E124E3600CB8101 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FABD8E21E124E3600CB8101 /* AppDelegate.swift */; };
 		8FABD8E51E124E3600CB8101 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FABD8E41E124E3600CB8101 /* ViewController.swift */; };
 		8FABD8E81E124E3600CB8101 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8FABD8E61E124E3600CB8101 /* Main.storyboard */; };
@@ -15,7 +19,7 @@
 		8FABD8F81E124E3600CB8101 /* JPhotoLibraryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FABD8F71E124E3600CB8101 /* JPhotoLibraryTests.swift */; };
 		8FABD9031E124E3600CB8101 /* JPhotoLibraryUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FABD9021E124E3600CB8101 /* JPhotoLibraryUITests.swift */; };
 		8FABD9141E12622800CB8101 /* PhotoGroupProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FABD9131E12622800CB8101 /* PhotoGroupProtocol.swift */; };
-		8FABD9161E126FBD00CB8101 /* PhotoKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FABD9151E126FBD00CB8101 /* PhotoKit.swift */; };
+		8FABD9161E126FBD00CB8101 /* PhotoLibraryKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FABD9151E126FBD00CB8101 /* PhotoLibraryKit.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -36,6 +40,10 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		235520681E389369000D1A3B /* AlbumListView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AlbumListView.swift; sourceTree = "<group>"; };
+		2389751E1E48B069005B95A5 /* placeHolder.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = placeHolder.jpg; sourceTree = "<group>"; };
+		238975201E48C012005B95A5 /* AlbumCollectionView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AlbumCollectionView.swift; sourceTree = "<group>"; };
+		23DCD5131E39F801005EB1BD /* ConvenienceConstant.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConvenienceConstant.swift; sourceTree = "<group>"; };
 		8F3998591E13A37A00DC6AB4 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Main.strings"; sourceTree = "<group>"; };
 		8F39985A1E13A37A00DC6AB4 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/LaunchScreen.strings"; sourceTree = "<group>"; };
 		8FABD8DF1E124E3600CB8101 /* JPhotoLibrary.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = JPhotoLibrary.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -52,7 +60,7 @@
 		8FABD9021E124E3600CB8101 /* JPhotoLibraryUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JPhotoLibraryUITests.swift; sourceTree = "<group>"; };
 		8FABD9041E124E3600CB8101 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8FABD9131E12622800CB8101 /* PhotoGroupProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoGroupProtocol.swift; sourceTree = "<group>"; };
-		8FABD9151E126FBD00CB8101 /* PhotoKit.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoKit.swift; sourceTree = "<group>"; };
+		8FABD9151E126FBD00CB8101 /* PhotoLibraryKit.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoLibraryKit.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -103,6 +111,7 @@
 		8FABD8E11E124E3600CB8101 /* JPhotoLibrary */ = {
 			isa = PBXGroup;
 			children = (
+				2389751E1E48B069005B95A5 /* placeHolder.jpg */,
 				8FABD9121E12622800CB8101 /* Class */,
 				8FABD8E21E124E3600CB8101 /* AppDelegate.swift */,
 				8FABD8E41E124E3600CB8101 /* ViewController.swift */,
@@ -136,7 +145,10 @@
 			isa = PBXGroup;
 			children = (
 				8FABD9131E12622800CB8101 /* PhotoGroupProtocol.swift */,
-				8FABD9151E126FBD00CB8101 /* PhotoKit.swift */,
+				8FABD9151E126FBD00CB8101 /* PhotoLibraryKit.swift */,
+				235520681E389369000D1A3B /* AlbumListView.swift */,
+				23DCD5131E39F801005EB1BD /* ConvenienceConstant.swift */,
+				238975201E48C012005B95A5 /* AlbumCollectionView.swift */,
 			);
 			path = Class;
 			sourceTree = "<group>";
@@ -250,6 +262,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				8FABD8ED1E124E3600CB8101 /* LaunchScreen.storyboard in Resources */,
+				2389751F1E48B069005B95A5 /* placeHolder.jpg in Resources */,
 				8FABD8EA1E124E3600CB8101 /* Assets.xcassets in Resources */,
 				8FABD8E81E124E3600CB8101 /* Main.storyboard in Resources */,
 			);
@@ -277,9 +290,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				8FABD9141E12622800CB8101 /* PhotoGroupProtocol.swift in Sources */,
+				23DCD5141E39F801005EB1BD /* ConvenienceConstant.swift in Sources */,
 				8FABD8E51E124E3600CB8101 /* ViewController.swift in Sources */,
 				8FABD8E31E124E3600CB8101 /* AppDelegate.swift in Sources */,
-				8FABD9161E126FBD00CB8101 /* PhotoKit.swift in Sources */,
+				8FABD9161E126FBD00CB8101 /* PhotoLibraryKit.swift in Sources */,
+				238975211E48C012005B95A5 /* AlbumCollectionView.swift in Sources */,
+				235520691E389369000D1A3B /* AlbumListView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
