@@ -15,6 +15,9 @@ let cellID = "AlbumListID"
 class AlbumListViewController: UIViewController {
 
     override func viewDidLoad() {
+        self.navigationController?.navigationBar.barTintColor = UIColor.init(white: 0.1, alpha: 0.3)
+        self.navigationController?.navigationBar.titleTextAttributes = [NSForegroundColorAttributeName: UIColor.white]
+        self.navigationController?.navigationBar.tintColor = .white
         let rightBarItem = UIBarButtonItem.init(title: "取消", style: .plain, target: self, action: #selector(dismissNavVC))
         self.navigationItem.rightBarButtonItem = rightBarItem
         let albumTableView = AlbumListView.init()

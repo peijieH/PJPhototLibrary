@@ -8,10 +8,10 @@
 
 import Foundation
 import Photos
-import CoreGraphics
+
 
 // MARK: cell size
-let thumbnailWidth = UIScreen.main.bounds.size.width / 4 - 2 * 2
+let thumbnailWidth = UIScreen.main.bounds.size.width / 4 - 1 * 1
 let thumbnailSize = CGSize.init(width: thumbnailWidth, height: thumbnailWidth)
 
 struct ImageSize {
@@ -20,6 +20,9 @@ struct ImageSize {
             return CGSize.init(width: thumbnailWidth * UIScreen.main.scale, height: thumbnailWidth * UIScreen.main.scale)
         }
     }
+    
+    static var screenSize: CGSize = CGSize.init(width: screenWidth, height: screenHeight)
+    
 }
 
 class LibAuthorization {
@@ -79,20 +82,20 @@ func collectionImageData(collection: PHAssetCollection) -> [PHAsset]{
 
 func setLibImage(imageAsset: PHAsset, imageQuality: PHImageRequestOptionsDeliveryMode, resultHandler: @escaping (UIImage?) -> Void) {
     let options = PHImageRequestOptions.init()
-    //options.isSynchronous = true
     options.deliveryMode = imageQuality
     PHImageManager.default().requestImage(for: imageAsset, targetSize: ImageSize.quarterSize, contentMode: .default, options: options) { (image, info) in
-        if image != nil{
-
-            let cropRect = CGRect.init(x: 0, y: (image?.size.height)!/2 - ImageSize.quarterSize.height/2, width: ImageSize.quarterSize.width, height: ImageSize.quarterSize.height)
-            
-            UIGraphicsBeginImageContext(ImageSize.quarterSize)
-            image?.draw(in: cropRect)
-            UIGraphicsEndImageContext()
-        }
         resultHandler(image)
     }
 }
+
+func setBrowserImage(imageAsset: PHAsset, imageQuality: PHImageRequestOptionsDeliveryMode, resultHandler: @escaping (UIImage?) -> Void) {
+    let options = PHImageRequestOptions.init()
+    options.deliveryMode = imageQuality
+    PHImageManager.default().requestImage(for: imageAsset, targetSize: ImageSize.screenSize, contentMode: .default, options: options) { (image, info) in
+        resultHandler(image)
+    }
+}
+
 
 
 

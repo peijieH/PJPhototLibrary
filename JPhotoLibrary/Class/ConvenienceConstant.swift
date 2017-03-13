@@ -11,7 +11,7 @@ import UIKit
 
 let screenBounds = UIScreen.main.bounds
 let screenWidth = screenBounds.size.width
-let sceenHeight = screenBounds.size.height
+let screenHeight = screenBounds.size.height
 
 
 
@@ -25,5 +25,10 @@ func alertView(parentVC: UIViewController, title: String, message: String){
     let alertController = UIAlertController.init(title: title, message: message, preferredStyle: .alert)
     alertController.addAction(UIAlertAction.init(title: "好的", style: .default, handler: nil))
     parentVC.present(alertController, animated: true, completion: nil)
+    
+    
 }
+
+
+
 
