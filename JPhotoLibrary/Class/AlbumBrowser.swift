@@ -34,7 +34,6 @@ class BrowserCollectionVC: UIViewController {
         self.navigationController?.isNavigationBarHidden = true
         createNavbarView()
         
-        
     }
     
     func createNavbarView() {
@@ -54,6 +53,9 @@ class BrowserCollectionVC: UIViewController {
     override func viewDidLayoutSubviews() {
         browserCollectionView?.scrollToItem(at: IndexPath.init(row: selectItemIndex, section: 0), at: .centeredHorizontally, animated: false)
 
+    }
+    override func viewWillDisappear(_ animated: Bool) {
+        self.navigationController?.setNavigationBarHidden(false, animated: true)
     }
 
 }
@@ -160,8 +162,6 @@ extension BrowserCollectionCell: UIScrollViewDelegate {
         }
 
     }
-
-    
     func viewForZooming(in scrollView: UIScrollView) -> UIView? {
         return self.imageView
     }
