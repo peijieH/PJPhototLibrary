@@ -11,30 +11,66 @@ import UIKit
 import Photos
 
 
-
-class AlbumCollectionViewController: UIViewController {
+let bottomViewHeight:CGFloat = 44
+class AlbumCollectionViewController : UIViewController {
     var assetCollectionArray: PHFetchResult<PHAsset>?
     let collectionCellID = "collectionCellID"
-    
+    var bottomBar: BottomBarView?
     override func viewDidLoad() {
+        SelectImageCenter.shareManager.initData(collectionCout: (assetCollectionArray?.count)!)
         let rightBarItem = UIBarButtonItem.init(title: "取消", style: .plain, target: self, action: #selector(dismissNavVC))
         self.navigationItem.rightBarButtonItem = rightBarItem
         
-        let albumCollectionView = AlbumCollectionView.init()
+        let albumCollectionView = AlbumCollectionView.init(frame: CGRect.init(origin: CGPoint.zero, size: CGSize.init(width: self.view.bounds.width, height: self.view.bounds.height - bottomViewHeight)))
         albumCollectionView.register(AlbumCollectionViewCell.self, forCellWithReuseIdentifier: collectionCellID)
+        
+        bottomBar = BottomBarView.init(frame: CGRect.init(origin: CGPoint.init(x: 0, y: self.view.bounds.height - bottomViewHeight), size: CGSize.init(width: ConstantValue.screenWidth, height: bottomViewHeight)))
+        
         albumCollectionView.delegate = self
         albumCollectionView.dataSource = self
         self.view.addSubview(albumCollectionView)
+        self.view.addSubview(bottomBar!)
+        
         
     }
     
     func dismissNavVC() {
         self.navigationController?.dismiss(animated: true, completion: nil)
     }
-
+    
+    deinit {
+        SelectImageCenter.shareManager.cleanData()
+    }
 }
 
-extension AlbumCollectionViewController: UICollectionViewDelegate {
+class BottomBarView : UIView {
+    var sendBt: UIButton
+    let sendBtHeight: CGFloat = 30
+    let sendBtWidth: CGFloat = 40
+    override init(frame: CGRect) {
+        
+        sendBt = UIButton.init(frame: CGRect.init(x: frame.width - sendBtWidth - 10, y: 7, width: sendBtWidth, height: sendBtHeight))
+        sendBt.setTitle("发送", for: .normal)
+        super.init(frame: frame)
+        
+        sendBt.setTitleColor(UIColor.btTitleSelectColor, for: .normal)
+        sendBt.setTitleColor(UIColor.btTitleDisableColor, for: .disabled)
+        sendBt.addTarget(self, action: #selector(sendAction(sender:)), for: .touchUpInside)
+        
+        self.backgroundColor = .white
+        self.addSubview(sendBt)
+        
+    }
+    func sendAction(sender: UIButton) {
+        sender.isEnabled = false
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+}
+
+extension AlbumCollectionViewController : UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let albumBrowser = BrowserCollectionVC.init()
         albumBrowser.assetCollectionArray = assetCollectionArray
@@ -42,16 +78,20 @@ extension AlbumCollectionViewController: UICollectionViewDelegate {
         self.navigationController?.pushViewController(albumBrowser, animated: true)
     }
 }
-extension AlbumCollectionViewController: UICollectionViewDataSource {
+extension AlbumCollectionViewController : UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return assetCollectionArray?.count ?? 0
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: collectionCellID, for: indexPath)
+        let albumThumbnailCell = cell as! AlbumCollectionViewCell
+        albumThumbnailCell.cellImageAsset = assetCollectionArray?[indexPath.row]
+        albumThumbnailCell.cellIndex = indexPath.row
+        albumThumbnailCell.selectBt.isSelected = SelectImageCenter.shareManager.collectionArray[indexPath.row]
         setLibImage(imageAsset: (assetCollectionArray?.object(at: indexPath.row))!, imageQuality: .opportunistic) { (image) in
             if image != nil{
-                (cell as! AlbumCollectionViewCell).contentImage = self.imageResize(image: image!, size: thumbnailSize)
+                albumThumbnailCell.contentImage = self.imageResize(image: image!, size: thumbnailSize)
             }
             
         }
@@ -73,15 +113,15 @@ extension AlbumCollectionViewController: UICollectionViewDataSource {
 }
 
 
-class AlbumCollectionView: UICollectionView {
-     convenience init() {
+class AlbumCollectionView : UICollectionView {
+    convenience init(frame: CGRect) {
         let layout = UICollectionViewFlowLayout.init()
         layout.itemSize = thumbnailSize
         layout.estimatedItemSize = thumbnailSize
         layout.scrollDirection = .vertical
         layout.minimumLineSpacing = 2
         layout.minimumInteritemSpacing = 0
-        self.init(frame: screenBounds, collectionViewLayout: layout)
+        self.init(frame: frame, collectionViewLayout: layout)
         self.backgroundColor = UIColor.white
     }
 
@@ -92,8 +132,11 @@ class AlbumCollectionView: UICollectionView {
 
 
 
-class AlbumCollectionViewCell: UICollectionViewCell {
+class AlbumCollectionViewCell : UICollectionViewCell {
     let contentImageView: UIImageView
+    let selectBt: UIButton
+    var cellIndex: Int?
+    var cellImageAsset: PHAsset?
     var contentImage: UIImage? {
         set {
             self.contentImageView.image = newValue
@@ -105,9 +148,27 @@ class AlbumCollectionViewCell: UICollectionViewCell {
     override init(frame: CGRect) {
         let thumbnailFrame = CGRect.init(origin: CGPoint.init(x: 0, y: 0), size: thumbnailSize)
         contentImageView = UIImageView.init(frame: thumbnailFrame)
+        selectBt = UIButton.init(frame: CGRect.init(origin: CGPoint.init(x: frame.width - 2 - 23, y: 2), size: CGSize.init(width: 23, height: 23)))
+        selectBt.setImage(UIImage.init(named: "unSelect"), for: .normal)
+        selectBt.setImage(UIImage.init(named: "select"), for: .selected)
         super.init(frame: frame)
         self.contentView.addSubview(contentImageView)
         self.contentView.backgroundColor = UIColor.white
+        self.contentView.addSubview(selectBt)
+        selectBt.addTarget(self, action: #selector(cellSelectAction(sender:)), for: .touchUpInside)
+    }
+    
+    func cellSelectAction(sender: UIButton) {
+        if sender.isSelected {
+            sender.isSelected = false
+            guard cellIndex != nil, cellImageAsset != nil else {
+                fatalError("cellIndex or cellImageAsset is nil")
+            }
+            SelectImageCenter.shareManager.removeSelectImage(index: cellIndex!, imageAsset: cellImageAsset!)
+        } else {
+            sender.isSelected = true
+            SelectImageCenter.shareManager.addSelectImage(index: cellIndex!, imageAsset: cellImageAsset!)
+        }
     }
 
     required init?(coder aDecoder: NSCoder) {

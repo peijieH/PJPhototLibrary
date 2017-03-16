@@ -32,7 +32,7 @@ extension UIImage {
     func calculateSize() -> CGSize {
         switch self.imageOrientation {
         case .up:
-            return CGSize.init(width: screenWidth, height: self.size.height*screenWidth/self.size.width)
+            return CGSize.init(width: ConstantValue.screenWidth, height: self.size.height*ConstantValue.screenWidth/self.size.width)
         default:
             return CGSize.zero
         }
@@ -43,7 +43,21 @@ extension UIImageView {
 
 }
 
-
+extension UIColor {
+    class var btTitleSelectColor: UIColor {
+            return UIColor.init(red: 58/255, green: 187/255, blue: 4/255, alpha: 1)
+    }
+    
+    class var btTitleDisableColor: UIColor {
+            return UIColor.init(red: 180/255, green: 227/255, blue: 185/255, alpha: 1)
+    }
+    
+    class var navViewBackgroundColor: UIColor {
+            return UIColor.init(white: 0.1, alpha: 0.7)
+    }
+    
+    
+}
 
 
 

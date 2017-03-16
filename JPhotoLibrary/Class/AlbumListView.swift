@@ -32,7 +32,7 @@ class AlbumListViewController: UIViewController {
 class AlbumListView: UITableView {
     let photoDataSource = PhotoDataSource.init()
     convenience init() {
-        self.init(frame: screenBounds, style: .plain)
+        self.init(frame: ConstantValue.screenBounds, style: .plain)
         self.dataSource = self
     }
 }

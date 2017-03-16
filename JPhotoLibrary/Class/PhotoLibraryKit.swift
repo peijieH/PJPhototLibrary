@@ -21,7 +21,7 @@ struct ImageSize {
         }
     }
     
-    static var screenSize: CGSize = CGSize.init(width: screenWidth, height: screenHeight)
+    static var screenSize: CGSize = CGSize.init(width: ConstantValue.screenWidth, height: ConstantValue.screenHeight)
     
 }
 

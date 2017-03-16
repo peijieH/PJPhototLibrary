@@ -9,9 +9,12 @@
 import Foundation
 import UIKit
 
-let screenBounds = UIScreen.main.bounds
-let screenWidth = screenBounds.size.width
-let screenHeight = screenBounds.size.height
+struct ConstantValue {
+    static let screenBounds = UIScreen.main.bounds
+    static let screenWidth = screenBounds.size.width
+    static let screenHeight = screenBounds.size.height
+}
+
 
 
 
