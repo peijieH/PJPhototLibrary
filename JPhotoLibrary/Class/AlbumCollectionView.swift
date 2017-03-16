@@ -15,30 +15,36 @@ let bottomViewHeight:CGFloat = 44
 class AlbumCollectionViewController : UIViewController {
     var assetCollectionArray: PHFetchResult<PHAsset>?
     let collectionCellID = "collectionCellID"
+    var albumCollectionView: AlbumCollectionView?
     var bottomBar: BottomBarView?
     override func viewDidLoad() {
         SelectImageCenter.shareManager.initData(collectionCout: (assetCollectionArray?.count)!)
         let rightBarItem = UIBarButtonItem.init(title: "取消", style: .plain, target: self, action: #selector(dismissNavVC))
         self.navigationItem.rightBarButtonItem = rightBarItem
         
-        let albumCollectionView = AlbumCollectionView.init(frame: CGRect.init(origin: CGPoint.zero, size: CGSize.init(width: self.view.bounds.width, height: self.view.bounds.height - bottomViewHeight)))
-        albumCollectionView.register(AlbumCollectionViewCell.self, forCellWithReuseIdentifier: collectionCellID)
+        albumCollectionView = AlbumCollectionView.init(frame: CGRect.init(origin: CGPoint.zero, size: CGSize.init(width: self.view.bounds.width, height: self.view.bounds.height - bottomViewHeight)))
+        albumCollectionView?.register(AlbumCollectionViewCell.self, forCellWithReuseIdentifier: collectionCellID)
         
         bottomBar = BottomBarView.init(frame: CGRect.init(origin: CGPoint.init(x: 0, y: self.view.bounds.height - bottomViewHeight), size: CGSize.init(width: ConstantValue.screenWidth, height: bottomViewHeight)))
         
-        albumCollectionView.delegate = self
-        albumCollectionView.dataSource = self
-        self.view.addSubview(albumCollectionView)
+        albumCollectionView?.delegate = self
+        albumCollectionView?.dataSource = self
+        self.view.addSubview(albumCollectionView!)
         self.view.addSubview(bottomBar!)
         
+        NotificationCenter.default.addObserver(self, selector: #selector(reloadCellSelectStatusAction(notify:)), name: .UpdateAlbumThumbnailCellData, object: nil)
         
     }
     
     func dismissNavVC() {
         self.navigationController?.dismiss(animated: true, completion: nil)
     }
+    func reloadCellSelectStatusAction (notify: NSNotification) {
+        albumCollectionView?.reloadItems(at: [NSIndexPath.init(row: notify.object as! Int, section: 0) as IndexPath])
+    }
     
     deinit {
+        NotificationCenter.default.removeObserver(self, name: .UpdateAlbumThumbnailCellData, object: nil)
         SelectImageCenter.shareManager.cleanData()
     }
 }
@@ -129,9 +135,6 @@ class AlbumCollectionView : UICollectionView {
 
 
 
-
-
-
 class AlbumCollectionViewCell : UICollectionViewCell {
     let contentImageView: UIImageView
     let selectBt: UIButton
@@ -164,10 +167,10 @@ class AlbumCollectionViewCell : UICollectionViewCell {
             guard cellIndex != nil, cellImageAsset != nil else {
                 fatalError("cellIndex or cellImageAsset is nil")
             }
-            SelectImageCenter.shareManager.removeSelectImage(index: cellIndex!, imageAsset: cellImageAsset!)
+            SelectImageCenter.shareManager.removeSelectI
         } else {
             sender.isSelected = true
-            SelectImageCenter.shareManager.addSelectImage(index: cellIndex!, imageAsset: cellImageAsset!)
+            SelectImageCenter.shareManager.addSelectImage( ,index: cellIndex!, imageAsset: cellImageAsset!)
         }
     }
 

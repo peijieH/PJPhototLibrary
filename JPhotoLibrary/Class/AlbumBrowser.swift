@@ -47,6 +47,7 @@ class BrowserCollectionVC: UIViewController {
         self.navigationController?.isNavigationBarHidden = true
         navView = NavView.init(frame: AlbumListViewConstantValue.NavViewFrame)
         navView?.backBt?.addTarget(self, action: #selector(backPopAction), for: .touchUpInside)
+        navView?.selectBt?.addTarget(self, action: #selector(selectImageAction(sender:)), for: .touchUpInside)
         bottomBarView = BrowserBottomBarView.init(frame: AlbumListViewConstantValue.browserBottomBarViewFrame)
         self.view.addSubview(bottomBarView!)
         self.view.addSubview(navView!)
@@ -55,15 +56,31 @@ class BrowserCollectionVC: UIViewController {
     func backPopAction() {
         _ = self.navigationController?.popViewController(animated: true)
     }
+    
+    func selectImageAction(sender: UIButton) {
+        let tempIndex = getVisibleItemIndex()
+        if sender.isSelected {
+            sender.isSelected = false
+            SelectImageCenter.shareManager.removeSelectImage(index: tempIndex, imageAsset: (assetCollectionArray?[tempIndex])!)
+        } else {
+            sender.isSelected = true
+            SelectImageCenter.shareManager.addSelectImage(index: tempIndex, imageAsset: (assetCollectionArray?[tempIndex])!)
+        }
+
+    }
 
     override func viewDidLayoutSubviews() {
         browserCollectionView?.scrollToItem(at: IndexPath.init(row: selectItemIndex, section: 0), at: .centeredHorizontally, animated: false)
-
     }
+    
     override func viewWillDisappear(_ animated: Bool) {
         self.navigationController?.setNavigationBarHidden(false, animated: true)
     }
     
+    /// get visible cell index
+    func getVisibleItemIndex() -> Int{
+        return Int(lroundf(Float((browserCollectionView?.contentOffset.x)!/ConstantValue.screenWidth)))
+    }
 }
 
 class NavView : UIView {
@@ -93,7 +110,6 @@ class NavView : UIView {
         selectBt = UIButton.init(frame: AlbumListViewConstantValue.selectBtFrame)
         selectBt?.setImage(UIImage.init(named: "unSelect"), for: .normal)
         selectBt?.setImage(UIImage.init(named: "select"), for: .selected)
-        selectBt?.addTarget(self, action: #selector(selectAction(sender:)), for: .touchUpInside)
         
         self.addSubview(backBt!)
         self.backgroundColor = UIColor.navViewBackgroundColor
@@ -103,13 +119,7 @@ class NavView : UIView {
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    func selectAction(sender: UIButton) {
-        if sender.isSelected {
-            sender.isSelected = false
-        } else {
-            sender.isSelected = true
-        }
-    }
+
 }
 
 class BrowserBottomBarView: UIView {
@@ -185,6 +195,14 @@ extension BrowserCollectionVC: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         
     }
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        let index = getVisibleItemIndex()
+        if SelectImageCenter.shareManager.collectionArray[index] {
+            navView?.selectBt?.isSelected = true
+        } else {
+            navView?.selectBt?.isSelected = false
+        }
+    }
 }
 
 //MARK:
@@ -196,6 +214,7 @@ class BrowserCollectionView: UICollectionView {
         layout.minimumLineSpacing = 0.0
         self.init(frame: frame, collectionViewLayout: layout)
         self.isPagingEnabled = true
+        
     }
     
     

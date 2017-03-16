@@ -14,11 +14,13 @@ enum ImageDataType {
     case data
 }
 
+
+
 class SelectImageCenter {
     var collectionArray:[Bool] = []
     var selectArray: [PHAsset] = [] {
         willSet {
-            print(newValue)
+            
         }
     }
     var imageType = ImageDataType.data
@@ -33,14 +35,16 @@ class SelectImageCenter {
         selectArray.removeAll()
     }
     
-    func addSelectImage(index: Int, imageAsset: PHAsset) {
+    func addSelectImage(isNotify: Bool, index: Int, imageAsset: PHAsset) {
         collectionArray[index] = true
         selectArray.append(imageAsset)
+        if isNotify {
+            UpdateAlbumThumbnailCellData(index: index)
+        }
     }
     
-    func removeSelectImage(index: Int, imageAsset: PHAsset) {
+    func removeSelectImage(isNotify: Bool, index: Int, imageAsset: PHAsset) {
         collectionArray[index] = false
-        
         for (indexTemp, valueTemp) in selectArray.enumerated() {
             if valueTemp == imageAsset {
                 selectArray.remove(at: indexTemp)
@@ -48,11 +52,26 @@ class SelectImageCenter {
                 
             }
         }
+        if isNotify {
+            UpdateAlbumThumbnailCellData(index: index)
+        }
     }
     
     func sendImageData() {
         
     }
     
+    func UpdateAlbumThumbnailCellData(index: Int) {
+        NotificationCenter.default.post(name: .UpdateAlbumThumbnailCellData, object: index)
+        
+    }
+}
+
+extension NSNotification.Name {
+    static let UpdateAlbumThumbnailCellData: NSNotification.Name = NSNotification.Name.init("com.peijie.jptotolibrary.UpdateAlbumThumbnailCellData")
     
 }
+
+
+
+

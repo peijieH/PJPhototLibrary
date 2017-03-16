@@ -493,6 +493,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = V7R5W8XVT6;
 				INFOPLIST_FILE = JPhotoLibrary/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = PJ.JPhotoLibrary;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -506,6 +507,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = V7R5W8XVT6;
 				INFOPLIST_FILE = JPhotoLibrary/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = PJ.JPhotoLibrary;
 				PRODUCT_NAME = "$(TARGET_NAME)";
