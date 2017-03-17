@@ -61,10 +61,10 @@ class BrowserCollectionVC: UIViewController {
         let tempIndex = getVisibleItemIndex()
         if sender.isSelected {
             sender.isSelected = false
-            SelectImageCenter.shareManager.removeSelectImage(index: tempIndex, imageAsset: (assetCollectionArray?[tempIndex])!)
+            SelectImageCenter.shareManager.removeSelectImage(isNotify: true, index: tempIndex, imageAsset: (assetCollectionArray?[tempIndex])!)
         } else {
             sender.isSelected = true
-            SelectImageCenter.shareManager.addSelectImage(index: tempIndex, imageAsset: (assetCollectionArray?[tempIndex])!)
+            SelectImageCenter.shareManager.addSelectImage(isNotify: true, index: tempIndex, imageAsset: (assetCollectionArray?[tempIndex])!)
         }
 
     }
@@ -79,7 +79,7 @@ class BrowserCollectionVC: UIViewController {
     
     /// get visible cell index
     func getVisibleItemIndex() -> Int{
-        return Int(lroundf(Float((browserCollectionView?.contentOffset.x)!/ConstantValue.screenWidth)))
+        return lroundf(Float((browserCollectionView?.contentOffset.x)!/ConstantValue.screenWidth))
     }
 }
 

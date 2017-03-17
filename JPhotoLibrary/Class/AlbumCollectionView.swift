@@ -12,35 +12,54 @@ import Photos
 
 
 let bottomViewHeight:CGFloat = 44
+
 class AlbumCollectionViewController : UIViewController {
-    var assetCollectionArray: PHFetchResult<PHAsset>?
+    
+    var assetCollectionArray: PHFetchResult<PHAsset>!
     let collectionCellID = "collectionCellID"
-    var albumCollectionView: AlbumCollectionView?
+    var albumCollectionView: AlbumCollectionView!
     var bottomBar: BottomBarView?
+    let assetManager: AssetManager = AssetManager()
+    
     override func viewDidLoad() {
-        SelectImageCenter.shareManager.initData(collectionCout: (assetCollectionArray?.count)!)
+        super.viewDidLoad()
+        
+        SelectImageCenter.shareManager.initData(collectionCout: (assetCollectionArray.count))
+        
         let rightBarItem = UIBarButtonItem.init(title: "取消", style: .plain, target: self, action: #selector(dismissNavVC))
         self.navigationItem.rightBarButtonItem = rightBarItem
         
         albumCollectionView = AlbumCollectionView.init(frame: CGRect.init(origin: CGPoint.zero, size: CGSize.init(width: self.view.bounds.width, height: self.view.bounds.height - bottomViewHeight)))
         albumCollectionView?.register(AlbumCollectionViewCell.self, forCellWithReuseIdentifier: collectionCellID)
+        albumCollectionView?.delegate = self
+        albumCollectionView?.dataSource = self
         
         bottomBar = BottomBarView.init(frame: CGRect.init(origin: CGPoint.init(x: 0, y: self.view.bounds.height - bottomViewHeight), size: CGSize.init(width: ConstantValue.screenWidth, height: bottomViewHeight)))
         
-        albumCollectionView?.delegate = self
-        albumCollectionView?.dataSource = self
         self.view.addSubview(albumCollectionView!)
         self.view.addSubview(bottomBar!)
         
         NotificationCenter.default.addObserver(self, selector: #selector(reloadCellSelectStatusAction(notify:)), name: .UpdateAlbumThumbnailCellData, object: nil)
-        
     }
     
     func dismissNavVC() {
         self.navigationController?.dismiss(animated: true, completion: nil)
     }
+    
     func reloadCellSelectStatusAction (notify: NSNotification) {
         albumCollectionView?.reloadItems(at: [NSIndexPath.init(row: notify.object as! Int, section: 0) as IndexPath])
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        
+        albumCollectionView?.scrollToItem(at: NSIndexPath.init(row: (assetCollectionArray?.count)! - 1, section: 0) as IndexPath, at: .bottom, animated: false)
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        
+        assetManager.stopCachingImage()
     }
     
     deinit {
@@ -53,8 +72,8 @@ class BottomBarView : UIView {
     var sendBt: UIButton
     let sendBtHeight: CGFloat = 30
     let sendBtWidth: CGFloat = 40
+    
     override init(frame: CGRect) {
-        
         sendBt = UIButton.init(frame: CGRect.init(x: frame.width - sendBtWidth - 10, y: 7, width: sendBtWidth, height: sendBtHeight))
         sendBt.setTitle("发送", for: .normal)
         super.init(frame: frame)
@@ -65,8 +84,8 @@ class BottomBarView : UIView {
         
         self.backgroundColor = .white
         self.addSubview(sendBt)
-        
     }
+    
     func sendAction(sender: UIButton) {
         sender.isEnabled = false
     }
@@ -78,11 +97,37 @@ class BottomBarView : UIView {
 
 extension AlbumCollectionViewController : UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let albumBrowser = BrowserCollectionVC.init()
-        albumBrowser.assetCollectionArray = assetCollectionArray
-        albumBrowser.selectItemIndex = indexPath.row
-        self.navigationController?.pushViewController(albumBrowser, animated: true)
+//        let albumBrowser = BrowserCollectionVC.init()
+//        albumBrowser.assetCollectionArray = assetCollectionArray
+//        albumBrowser.selectItemIndex = indexPath.row
+//        self.navigationController?.pushViewController(albumBrowser, animated: true)
+        
     }
+    
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+//        let visiableitem = lroundf(Float(scrollView.contentOffset.y.divided(by: thumbnailWidth)))
+//        if visiableitem >= 1 {
+//            let preheatAssets:[PHAsset] = [assetCollectionArray![visiableitem*4], assetCollectionArray![visiableitem*4-1], assetCollectionArray![visiableitem*4-2], assetCollectionArray![visiableitem*4-3]]
+//            assetManager.startLoadThumbnail(for: preheatAssets)
+//        }
+        
+        let visibleRect = CGRect.init(origin: scrollView.contentOffset, size: scrollView.bounds.size)
+        let visibleLayoutAttributes = albumCollectionView.collectionViewLayout.layoutAttributesForElements(in: visibleRect)
+        let visibleItems = visibleLayoutAttributes?.map { $0.indexPath.row }
+        let max = visibleItems?.max()
+        let min = visibleItems?.min()
+        guard max != nil else { return }
+        if assetCollectionArray.count - 1 - max! > 8 {
+            
+        }
+        
+    }
+    
+    
+    
+    
+    
+
 }
 extension AlbumCollectionViewController : UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -95,11 +140,13 @@ extension AlbumCollectionViewController : UICollectionViewDataSource {
         albumThumbnailCell.cellImageAsset = assetCollectionArray?[indexPath.row]
         albumThumbnailCell.cellIndex = indexPath.row
         albumThumbnailCell.selectBt.isSelected = SelectImageCenter.shareManager.collectionArray[indexPath.row]
-        setLibImage(imageAsset: (assetCollectionArray?.object(at: indexPath.row))!, imageQuality: .opportunistic) { (image) in
-            if image != nil{
+        assetManager.getImage(for: (assetCollectionArray?[indexPath.row])!)
+        {
+            image in
+            if image != nil {
                 albumThumbnailCell.contentImage = self.imageResize(image: image!, size: thumbnailSize)
             }
-            
+
         }
         return cell
     }
@@ -133,8 +180,6 @@ class AlbumCollectionView : UICollectionView {
 
 }
 
-
-
 class AlbumCollectionViewCell : UICollectionViewCell {
     let contentImageView: UIImageView
     let selectBt: UIButton
@@ -167,10 +212,10 @@ class AlbumCollectionViewCell : UICollectionViewCell {
             guard cellIndex != nil, cellImageAsset != nil else {
                 fatalError("cellIndex or cellImageAsset is nil")
             }
-            SelectImageCenter.shareManager.removeSelectI
+            SelectImageCenter.shareManager.removeSelectImage(index: cellIndex!, imageAsset: cellImageAsset!)
         } else {
             sender.isSelected = true
-            SelectImageCenter.shareManager.addSelectImage( ,index: cellIndex!, imageAsset: cellImageAsset!)
+            SelectImageCenter.shareManager.addSelectImage(index: cellIndex!, imageAsset: cellImageAsset!)
         }
     }
 
