@@ -19,6 +19,10 @@
 		23B478091E6D476B00262D66 /* UIKitExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23B478081E6D476B00262D66 /* UIKitExtension.swift */; };
 		23B4780B1E6D7E9200262D66 /* AlbumBrowser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23B4780A1E6D7E9200262D66 /* AlbumBrowser.swift */; };
 		23DCD5141E39F801005EB1BD /* ConvenienceConstant.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23DCD5131E39F801005EB1BD /* ConvenienceConstant.swift */; };
+		23EE2E1E1E7EB86500FD1F80 /* origin@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 23EE2E1A1E7EB86500FD1F80 /* origin@2x.png */; };
+		23EE2E1F1E7EB86500FD1F80 /* origin@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 23EE2E1B1E7EB86500FD1F80 /* origin@3x.png */; };
+		23EE2E201E7EB86500FD1F80 /* unOrigin@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 23EE2E1C1E7EB86500FD1F80 /* unOrigin@2x.png */; };
+		23EE2E211E7EB86500FD1F80 /* unOrigin@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 23EE2E1D1E7EB86500FD1F80 /* unOrigin@3x.png */; };
 		8FABD8E31E124E3600CB8101 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FABD8E21E124E3600CB8101 /* AppDelegate.swift */; };
 		8FABD8E51E124E3600CB8101 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FABD8E41E124E3600CB8101 /* ViewController.swift */; };
 		8FABD8E81E124E3600CB8101 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8FABD8E61E124E3600CB8101 /* Main.storyboard */; };
@@ -60,6 +64,10 @@
 		23B478081E6D476B00262D66 /* UIKitExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIKitExtension.swift; sourceTree = "<group>"; };
 		23B4780A1E6D7E9200262D66 /* AlbumBrowser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AlbumBrowser.swift; sourceTree = "<group>"; };
 		23DCD5131E39F801005EB1BD /* ConvenienceConstant.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConvenienceConstant.swift; sourceTree = "<group>"; };
+		23EE2E1A1E7EB86500FD1F80 /* origin@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "origin@2x.png"; sourceTree = "<group>"; };
+		23EE2E1B1E7EB86500FD1F80 /* origin@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "origin@3x.png"; sourceTree = "<group>"; };
+		23EE2E1C1E7EB86500FD1F80 /* unOrigin@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "unOrigin@2x.png"; sourceTree = "<group>"; };
+		23EE2E1D1E7EB86500FD1F80 /* unOrigin@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "unOrigin@3x.png"; sourceTree = "<group>"; };
 		8F3998591E13A37A00DC6AB4 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Main.strings"; sourceTree = "<group>"; };
 		8F39985A1E13A37A00DC6AB4 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/LaunchScreen.strings"; sourceTree = "<group>"; };
 		8FABD8DF1E124E3600CB8101 /* JPhotoLibrary.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = JPhotoLibrary.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -107,6 +115,10 @@
 		238BEE731E704ED10045B598 /* Resource */ = {
 			isa = PBXGroup;
 			children = (
+				23EE2E1A1E7EB86500FD1F80 /* origin@2x.png */,
+				23EE2E1B1E7EB86500FD1F80 /* origin@3x.png */,
+				23EE2E1C1E7EB86500FD1F80 /* unOrigin@2x.png */,
+				23EE2E1D1E7EB86500FD1F80 /* unOrigin@3x.png */,
 				2381029D1E78E23A00F0C8D3 /* unSelect@2x.png */,
 				2381029E1E78E23A00F0C8D3 /* unSelect@3x.png */,
 				2351B5391E77C05A0040DC23 /* select@2x.png */,
@@ -295,6 +307,10 @@
 			files = (
 				2351B53E1E77C05A0040DC23 /* select@3x.png in Resources */,
 				2381029F1E78E23A00F0C8D3 /* unSelect@2x.png in Resources */,
+				23EE2E1F1E7EB86500FD1F80 /* origin@3x.png in Resources */,
+				23EE2E201E7EB86500FD1F80 /* unOrigin@2x.png in Resources */,
+				23EE2E211E7EB86500FD1F80 /* unOrigin@3x.png in Resources */,
+				23EE2E1E1E7EB86500FD1F80 /* origin@2x.png in Resources */,
 				2351B5411E77DE770040DC23 /* back@2x.png in Resources */,
 				238102A01E78E23A00F0C8D3 /* unSelect@3x.png in Resources */,
 				8FABD8ED1E124E3600CB8101 /* LaunchScreen.storyboard in Resources */,

@@ -54,7 +54,9 @@ class AlbumCollectionViewController : UIViewController {
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        
+        guard assetCollectionArray.count > 0 else {
+            return
+        }
         albumCollectionView?.scrollToItem(at: NSIndexPath.init(row: (assetCollectionArray?.count)! - 1, section: 0) as IndexPath, at: .bottom, animated: false)
     }
     override func viewDidAppear(_ animated: Bool) {
@@ -75,7 +77,8 @@ class AlbumCollectionViewController : UIViewController {
 }
 
 class BottomBarView : UIView {
-    var sendBt: UIButton
+    var sendBt: UIButton!
+    var sendNum: UILabel!
     let sendBtHeight: CGFloat = 30
     let sendBtWidth: CGFloat = 40
     
@@ -88,8 +91,21 @@ class BottomBarView : UIView {
         sendBt.setTitleColor(UIColor.btTitleDisableColor, for: .disabled)
         sendBt.addTarget(self, action: #selector(sendAction(sender:)), for: .touchUpInside)
         
+        sendNum = UILabel.init(frame: CGRect.init(x: frame.width - sendBtWidth - 10 - 3 - 60, y: 8, width: 60, height: sendBtHeight - 5))
+        sendNum.textAlignment = .right
+        sendNum.textColor = UIColor.btTitleSelectColor
+        sendNum.font = UIFont.systemFont(ofSize: 14)
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(updateSendNumAction(notify:)), name: .UpdateSelectNum, object: nil)
+        
         self.backgroundColor = .white
         self.addSubview(sendBt)
+        self.addSubview(sendNum)
+        
+    }
+    
+    @objc fileprivate func updateSendNumAction(notify: NSNotification) {
+        self.sendNum.text = String.init(format: "%@", notify.object as! Int == 0 ? "" :  "(" + (notify.object as! Int).description + ")")
     }
     
     func sendAction(sender: UIButton) {
@@ -102,15 +118,14 @@ class BottomBarView : UIView {
 }
 
 let preheatCount = 2*4
+
 extension AlbumCollectionViewController : UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-//        let albumBrowser = BrowserCollectionVC.init()
-//        albumBrowser.assetCollectionArray = assetCollectionArray
-//        albumBrowser.selectItemIndex = indexPath.row
-//        self.navigationController?.pushViewController(albumBrowser, animated: true)
-        
+        let albumBrowser = BrowserCollectionVC.init()
+        albumBrowser.assetCollectionArray = assetCollectionArray
+        albumBrowser.selectItemIndex = indexPath.row
+        self.navigationController?.pushViewController(albumBrowser, animated: true)
     }
-
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         updateCachingAsset()
@@ -164,29 +179,12 @@ extension AlbumCollectionViewController : UICollectionViewDataSource {
         {
             image in
             if image != nil {
-//                albumThumbnailCell.contentImage = self.imageResize(image: image!, size: thumbnailSize)
                 albumThumbnailCell.contentImage = image
             }
-
         }
         return cell
     }
-    
-    func imageResize(image: UIImage, size: CGSize) -> UIImage? {
-        let pixelHeight = image.size.height
-        let pixelWidth = image.size.width
-        let newImage: UIImage?
-        if pixelHeight > pixelWidth {
-            newImage = image.cropImage(cropRect: CGRect.init(x: 0, y: (pixelHeight - pixelWidth)/2, width: pixelWidth, height: pixelWidth), targetSize: size)
-        }else {
-            newImage = image.cropImage(cropRect: CGRect.init(x: (pixelWidth - pixelHeight)/2, y: 0, width: pixelHeight, height: pixelHeight), targetSize: size)
-        }
-        
-        return newImage
-    }
 }
-
-
 
 
 class AlbumCollectionView : UICollectionView {
@@ -200,9 +198,7 @@ class AlbumCollectionView : UICollectionView {
         self.init(frame: frame, collectionViewLayout: layout)
         self.backgroundColor = UIColor.white
     }
-
 }
-
 
 class AlbumCollectionViewCell : UICollectionViewCell {
     let contentImageView: UIImageView
@@ -218,26 +214,26 @@ class AlbumCollectionViewCell : UICollectionViewCell {
         }
     }
     override init(frame: CGRect) {
-        let thumbnailFrame = CGRect.init(origin: CGPoint.init(x: 0, y: 0), size: thumbnailSize)
+        
         contentImageView = UIImageView.init()
         contentImageView.contentMode = .scaleAspectFill
         contentImageView.clipsToBounds = true
-
-        selectBt = UIButton.init(frame: CGRect.init(origin: CGPoint.init(x: frame.width - 2 - 23, y: 2), size: CGSize.init(width: 23, height: 23)))
-        selectBt.setImage(UIImage.init(named: "unSelect"), for: .normal)
-        selectBt.setImage(UIImage.init(named: "select"), for: .selected)
-        super.init(frame: frame)
-        self.contentView.addSubview(contentImageView)
-        self.contentView.backgroundColor = UIColor.white
-        self.contentView.addSubview(selectBt)
-        selectBt.addTarget(self, action: #selector(cellSelectAction(sender:)), for: .touchUpInside)
-        
         contentImageView.translatesAutoresizingMaskIntoConstraints = false
         
         let widthConstraint = NSLayoutConstraint.init(item: contentImageView, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: thumbnailSize.width)
         let heightConstraint = NSLayoutConstraint.init(item: contentImageView, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: thumbnailSize.height)
         contentImageView.addConstraints([widthConstraint, heightConstraint])
         
+        selectBt = UIButton.init(frame: CGRect.init(origin: CGPoint.init(x: frame.width - 2 - 23, y: 2), size: CGSize.init(width: 23, height: 23)))
+        selectBt.setImage(UIImage.init(named: "unSelect"), for: .normal)
+        selectBt.setImage(UIImage.init(named: "select"), for: .selected)
+        
+        super.init(frame: frame)
+        self.contentView.addSubview(contentImageView)
+        self.contentView.backgroundColor = UIColor.white
+        self.contentView.addSubview(selectBt)
+        
+        selectBt.addTarget(self, action: #selector(cellSelectAction(sender:)), for: .touchUpInside)
     }
     
     func cellSelectAction(sender: UIButton) {

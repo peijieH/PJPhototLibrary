@@ -16,12 +16,10 @@ let thumbnailSize = CGSize.init(width: thumbnailWidth, height: thumbnailWidth)
 
 struct ImageSize {
     static var thumbnailSize: CGSize{
-//            return CGSize.init(width: thumbnailWidth * UIScreen.main.scale, height: thumbnailWidth*PHImageManagerMaximumSize.height/PHImageManagerMaximumSize.width * UIScreen.main.scale)
             return CGSize.init(width: thumbnailWidth * UIScreen.main.scale, height: thumbnailWidth * UIScreen.main.scale)
     }
     
     static var screenSize: CGSize = CGSize.init(width: ConstantValue.screenWidth, height: ConstantValue.screenHeight)
-    
 }
 
 class LibAuthorization {
@@ -67,9 +65,6 @@ func allCollectionData() -> [PHAssetCollection] {
 
 }
 
-
-
-
 func collectionImageData(collection: PHAssetCollection) -> [PHAsset]{
     let result = PHAsset.fetchAssets(in: collection, options: nil)
     var assetArray: [PHAsset] = []
@@ -87,68 +82,6 @@ func setLibImage(imageAsset: PHAsset, imageQuality: PHImageRequestOptionsDeliver
         resultHandler(image)
     }
 }
-//load image
-
-
-
-
-//MARK: preheat load image
-
-
-class AssetManager {
-    let cachingImageManager = PHCachingImageManager()
-    let options: PHImageRequestOptions
-    var cachingAssets: [PHAsset] = []
-    
-    init() {
-        cachingImageManager.allowsCachingHighQualityImages = false
-        options = PHImageRequestOptions.init()
-        options.deliveryMode = .opportunistic
-        options.version = .current
-        options.resizeMode = .none
-
-
-    }
-
-    func getImage(for imageAsset: PHAsset,  resultHandler: @escaping (UIImage?) -> Void) {
-        cachingImageManager.requestImage(for: imageAsset, targetSize: ImageSize.thumbnailSize, contentMode: .aspectFill, options: nil) { image, _ in
-            resultHandler(image)
-        }
-    }
-    func startLoadThumbnail(for assets: [PHAsset]) {
-        cachingImageManager.startCachingImages(for: assets, targetSize: ImageSize.thumbnailSize, contentMode: .aspectFill, options: nil)
-    }
-
-    func stopCachingThumbnail(for assets: [PHAsset]) {
-        cachingImageManager.stopCachingImages(for: assets, targetSize: ImageSize.thumbnailSize, contentMode: .aspectFill, options: nil)
-    }
-    func stopCachingImage() {
-        cachingImageManager.stopCachingImagesForAllAssets()
-        
-    }
-    
-}
-
-
-
-
-
-
-func setBrowserImage(imageAsset: PHAsset, imageQuality: PHImageRequestOptionsDeliveryMode, resultHandler: @escaping (UIImage?) -> Void) {
-    let options = PHImageRequestOptions.init()
-    options.deliveryMode = imageQuality
-    PHCachingImageManager.default().requestImage(for: imageAsset, targetSize: ImageSize.screenSize, contentMode: .default, options: options) { (image, info) in
-        resultHandler(image)
-    }
-}
-
-
-
-
-func imageCount(collection: PHAssetCollection) -> Int {
-    return PHAsset.fetchAssets(in: collection, options: nil).count
-}
-
 
 func collectionLastImage(collection: PHAssetCollection, imageQuality: PHImageRequestOptionsDeliveryMode, resultHandler: @escaping (UIImage?) -> Void){
     let fetchResult = PHAsset.fetchAssets(in: collection, options: nil).lastObject
@@ -160,6 +93,72 @@ func collectionLastImage(collection: PHAssetCollection, imageQuality: PHImageReq
         resultHandler(nil)
     }
 }
+
+func setBrowserImage(imageAsset: PHAsset, imageQuality: PHImageRequestOptionsDeliveryMode, resultHandler: @escaping (UIImage?) -> Void) {
+    let options = PHImageRequestOptions.init()
+    options.deliveryMode = imageQuality
+    PHCachingImageManager.default().requestImage(for: imageAsset, targetSize: ImageSize.screenSize, contentMode: .default, options: options) { (image, info) in
+        resultHandler(image)
+    }
+    
+}
+
+func imageCount(collection: PHAssetCollection) -> Int {
+    return PHAsset.fetchAssets(in: collection, options: nil).count
+}
+
+
+//MARK: preheat load image
+
+
+class AssetManager {
+    
+    enum OptionsType {
+        case highQuality
+        case opportunistic
+    }
+    
+    let cachingImageManager = PHCachingImageManager()
+    var options: PHImageRequestOptions?
+    var targetSize: CGSize
+    
+    init(optionsType: OptionsType = .opportunistic, targetSize:CGSize = ImageSize.thumbnailSize) {
+        switch optionsType {
+        case .opportunistic:
+            self.targetSize = targetSize
+            options = nil
+            cachingImageManager.allowsCachingHighQualityImages = false
+        default:
+            self.targetSize = PHImageManagerMaximumSize
+            options = PHImageRequestOptions.init()
+            options?.deliveryMode = .highQualityFormat
+            options?.resizeMode = .none
+            cachingImageManager.allowsCachingHighQualityImages = true
+        }
+    }
+
+    func getImage(for imageAsset: PHAsset,  resultHandler: @escaping (UIImage?) -> Void) {
+        cachingImageManager.requestImage(for: imageAsset, targetSize: targetSize, contentMode: .aspectFill, options: options) { image, _ in
+            resultHandler(image)
+        }
+    }
+    func startLoadThumbnail(for assets: [PHAsset]) {
+        cachingImageManager.startCachingImages(for: assets, targetSize: targetSize, contentMode: .aspectFill, options: options)
+    }
+
+    func stopCachingThumbnail(for assets: [PHAsset]) {
+        cachingImageManager.stopCachingImages(for: assets, targetSize: targetSize, contentMode: .aspectFill, options: options)
+    }
+    func stopCachingImage() {
+        cachingImageManager.stopCachingImagesForAllAssets()
+        
+    }
+    
+    
+    
+}
+
+
 
 
 

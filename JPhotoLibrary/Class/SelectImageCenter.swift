@@ -14,15 +14,14 @@ enum ImageDataType {
     case data
 }
 
-
-
 class SelectImageCenter {
     var collectionArray:[Bool] = []
     var selectArray: [PHAsset] = [] {
         willSet {
-            
+            UpdateSelectNum(num: newValue.count)
         }
     }
+    
     var imageType = ImageDataType.data
     static let shareManager = SelectImageCenter()
     
@@ -62,12 +61,16 @@ class SelectImageCenter {
     
     func UpdateAlbumThumbnailCellData(index: Int) {
         NotificationCenter.default.post(name: .UpdateAlbumThumbnailCellData, object: index)
-        
+    }
+    
+    func UpdateSelectNum(num: Int) {
+        NotificationCenter.default.post(name: .UpdateSelectNum, object: num)
     }
 }
 
 extension NSNotification.Name {
-    static let UpdateAlbumThumbnailCellData: NSNotification.Name = NSNotification.Name.init("com.peijie.jptotolibrary.UpdateAlbumThumbnailCellData")
+    static let UpdateAlbumThumbnailCellData: NSNotification.Name = NSNotification.Name.init("com.peijie.jphtotolibrary.UpdateAlbumThumbnailCellData")
+    static let UpdateSelectNum: NSNotification.Name = NSNotification.Name.init("com.peijie.jphotolibrary.UpdateSelectNum")
     
 }
 

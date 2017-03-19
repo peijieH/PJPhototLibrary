@@ -59,5 +59,28 @@ extension UIColor {
     
 }
 
+func imageResize(image: UIImage, size: CGSize) -> UIImage? {
+    let pixelHeight = image.size.height
+    let pixelWidth = image.size.width
+    let newImage: UIImage?
+    if pixelHeight > pixelWidth {
+        newImage = image.cropImage(cropRect: CGRect.init(x: 0, y: (pixelHeight - pixelWidth)/2, width: pixelWidth, height: pixelWidth), targetSize: size)
+    }else {
+        newImage = image.cropImage(cropRect: CGRect.init(x: (pixelWidth - pixelHeight)/2, y: 0, width: pixelHeight, height: pixelHeight), targetSize: size)
+    }
+    return newImage
+}
+
+///MARK: origin button icon and title separately
+
+class OriginBt : UIButton {
+    override func titleRect(forContentRect contentRect: CGRect) -> CGRect {
+        return CGRect.init(x: 20, y: 2, width: 35, height: 40)
+    }
+    
+    override func imageRect(forContentRect contentRect: CGRect) -> CGRect {
+        return CGRect.init(x: 5, y: 14, width: 15, height: 15)
+    }
+}
 
 
