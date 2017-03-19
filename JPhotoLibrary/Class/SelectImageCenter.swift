@@ -49,7 +49,6 @@ class SelectImageCenter {
             if valueTemp == imageAsset {
                 selectArray.remove(at: indexTemp)
                 break
-                
             }
         }
         if isNotify {

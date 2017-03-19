@@ -20,6 +20,7 @@ class AlbumCollectionViewController : UIViewController {
     var albumCollectionView: AlbumCollectionView!
     var bottomBar: BottomBarView?
     let assetManager: AssetManager = AssetManager()
+    var lastPreheatRect = CGRect.zero
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -31,6 +32,7 @@ class AlbumCollectionViewController : UIViewController {
         
         albumCollectionView = AlbumCollectionView.init(frame: CGRect.init(origin: CGPoint.zero, size: CGSize.init(width: self.view.bounds.width, height: self.view.bounds.height - bottomViewHeight)))
         albumCollectionView?.register(AlbumCollectionViewCell.self, forCellWithReuseIdentifier: collectionCellID)
+        
         albumCollectionView?.delegate = self
         albumCollectionView?.dataSource = self
         
@@ -54,6 +56,10 @@ class AlbumCollectionViewController : UIViewController {
         super.viewDidLayoutSubviews()
         
         albumCollectionView?.scrollToItem(at: NSIndexPath.init(row: (assetCollectionArray?.count)! - 1, section: 0) as IndexPath, at: .bottom, animated: false)
+    }
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        updateCachingAsset()
     }
     
     override func viewDidDisappear(_ animated: Bool) {
@@ -95,6 +101,7 @@ class BottomBarView : UIView {
     }
 }
 
+let preheatCount = 2*4
 extension AlbumCollectionViewController : UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
 //        let albumBrowser = BrowserCollectionVC.init()
@@ -103,28 +110,40 @@ extension AlbumCollectionViewController : UICollectionViewDelegate {
 //        self.navigationController?.pushViewController(albumBrowser, animated: true)
         
     }
+
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-//        let visiableitem = lroundf(Float(scrollView.contentOffset.y.divided(by: thumbnailWidth)))
-//        if visiableitem >= 1 {
-//            let preheatAssets:[PHAsset] = [assetCollectionArray![visiableitem*4], assetCollectionArray![visiableitem*4-1], assetCollectionArray![visiableitem*4-2], assetCollectionArray![visiableitem*4-3]]
-//            assetManager.startLoadThumbnail(for: preheatAssets)
-//        }
-        
-        let visibleRect = CGRect.init(origin: scrollView.contentOffset, size: scrollView.bounds.size)
-        let visibleLayoutAttributes = albumCollectionView.collectionViewLayout.layoutAttributesForElements(in: visibleRect)
-        let visibleItems = visibleLayoutAttributes?.map { $0.indexPath.row }
-        let max = visibleItems?.max()
-        let min = visibleItems?.min()
-        guard max != nil else { return }
-        if assetCollectionArray.count - 1 - max! > 8 {
-            
-        }
-        
+        updateCachingAsset()
     }
     
+    func updateCachingAsset () {
+        let visibleRect = CGRect.init(origin: albumCollectionView.contentOffset, size: albumCollectionView.bounds.size)
+        let visibleItems = getItems(for: visibleRect)
+        
+        let prheatRect = visibleRect.insetBy(dx: 0, dy: -0.5 * visibleRect.height)
+        let preheatItems = getItems(for: prheatRect)
+        
+        let lastPreheat = getItems(for: lastPreheatRect)
+        
+        let visibleSet = Set(visibleItems!)
+        let preheatSet = Set(preheatItems!)
+        let lastPreheatSet = Set(lastPreheat!)
+        let new = Array(preheatSet.subtracting(lastPreheatSet))
+        let old = Array(lastPreheatSet.subtracting(visibleSet).subtracting(lastPreheatSet.subtracting(preheatSet)))
+        guard new.min() != lastPreheatSet.min() else { return }
+        let newAsset = new.flatMap { temp in assetCollectionArray[temp] }
+        let oldAsset = old.flatMap { temp in assetCollectionArray[temp] }
+        
+        assetManager.stopCachingThumbnail(for: oldAsset)
+        assetManager.startLoadThumbnail(for: newAsset)
+        lastPreheatRect = prheatRect
+
+    }
     
-    
+    func getItems(for rect: CGRect) -> [Int]?{
+        let layoutAttributes = albumCollectionView.collectionViewLayout.layoutAttributesForElements(in: rect)
+        return layoutAttributes?.map { $0.indexPath.row }
+    }
     
     
 
@@ -137,6 +156,7 @@ extension AlbumCollectionViewController : UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: collectionCellID, for: indexPath)
         let albumThumbnailCell = cell as! AlbumCollectionViewCell
+        
         albumThumbnailCell.cellImageAsset = assetCollectionArray?[indexPath.row]
         albumThumbnailCell.cellIndex = indexPath.row
         albumThumbnailCell.selectBt.isSelected = SelectImageCenter.shareManager.collectionArray[indexPath.row]
@@ -144,7 +164,8 @@ extension AlbumCollectionViewController : UICollectionViewDataSource {
         {
             image in
             if image != nil {
-                albumThumbnailCell.contentImage = self.imageResize(image: image!, size: thumbnailSize)
+//                albumThumbnailCell.contentImage = self.imageResize(image: image!, size: thumbnailSize)
+                albumThumbnailCell.contentImage = image
             }
 
         }
@@ -166,6 +187,8 @@ extension AlbumCollectionViewController : UICollectionViewDataSource {
 }
 
 
+
+
 class AlbumCollectionView : UICollectionView {
     convenience init(frame: CGRect) {
         let layout = UICollectionViewFlowLayout.init()
@@ -179,6 +202,7 @@ class AlbumCollectionView : UICollectionView {
     }
 
 }
+
 
 class AlbumCollectionViewCell : UICollectionViewCell {
     let contentImageView: UIImageView
@@ -195,7 +219,10 @@ class AlbumCollectionViewCell : UICollectionViewCell {
     }
     override init(frame: CGRect) {
         let thumbnailFrame = CGRect.init(origin: CGPoint.init(x: 0, y: 0), size: thumbnailSize)
-        contentImageView = UIImageView.init(frame: thumbnailFrame)
+        contentImageView = UIImageView.init()
+        contentImageView.contentMode = .scaleAspectFill
+        contentImageView.clipsToBounds = true
+
         selectBt = UIButton.init(frame: CGRect.init(origin: CGPoint.init(x: frame.width - 2 - 23, y: 2), size: CGSize.init(width: 23, height: 23)))
         selectBt.setImage(UIImage.init(named: "unSelect"), for: .normal)
         selectBt.setImage(UIImage.init(named: "select"), for: .selected)
@@ -204,6 +231,13 @@ class AlbumCollectionViewCell : UICollectionViewCell {
         self.contentView.backgroundColor = UIColor.white
         self.contentView.addSubview(selectBt)
         selectBt.addTarget(self, action: #selector(cellSelectAction(sender:)), for: .touchUpInside)
+        
+        contentImageView.translatesAutoresizingMaskIntoConstraints = false
+        
+        let widthConstraint = NSLayoutConstraint.init(item: contentImageView, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: thumbnailSize.width)
+        let heightConstraint = NSLayoutConstraint.init(item: contentImageView, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: thumbnailSize.height)
+        contentImageView.addConstraints([widthConstraint, heightConstraint])
+        
     }
     
     func cellSelectAction(sender: UIButton) {
@@ -223,6 +257,7 @@ class AlbumCollectionViewCell : UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
 }
+
 
 
 

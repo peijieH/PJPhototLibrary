@@ -11,12 +11,13 @@ import Photos
 
 
 // MARK: cell size
-let thumbnailWidth = UIScreen.main.bounds.size.width / 4 - 1 * 1
+let thumbnailWidth = (UIScreen.main.bounds.size.width - 6)/4
 let thumbnailSize = CGSize.init(width: thumbnailWidth, height: thumbnailWidth)
 
 struct ImageSize {
     static var thumbnailSize: CGSize{
-            return CGSize.init(width: thumbnailWidth * UIScreen.main.scale, height: thumbnailWidth*PHImageManagerMaximumSize.height/PHImageManagerMaximumSize.width * UIScreen.main.scale)
+//            return CGSize.init(width: thumbnailWidth * UIScreen.main.scale, height: thumbnailWidth*PHImageManagerMaximumSize.height/PHImageManagerMaximumSize.width * UIScreen.main.scale)
+            return CGSize.init(width: thumbnailWidth * UIScreen.main.scale, height: thumbnailWidth * UIScreen.main.scale)
     }
     
     static var screenSize: CGSize = CGSize.init(width: ConstantValue.screenWidth, height: ConstantValue.screenHeight)
@@ -97,25 +98,30 @@ func setLibImage(imageAsset: PHAsset, imageQuality: PHImageRequestOptionsDeliver
 class AssetManager {
     let cachingImageManager = PHCachingImageManager()
     let options: PHImageRequestOptions
-    let cachingAssets: [PHAsset] = []
+    var cachingAssets: [PHAsset] = []
+    
     init() {
         cachingImageManager.allowsCachingHighQualityImages = false
         options = PHImageRequestOptions.init()
-        options.deliveryMode = .highQualityFormat
+        options.deliveryMode = .opportunistic
         options.version = .current
         options.resizeMode = .none
+
 
     }
 
     func getImage(for imageAsset: PHAsset,  resultHandler: @escaping (UIImage?) -> Void) {
-        cachingImageManager.requestImage(for: imageAsset, targetSize: ImageSize.thumbnailSize, contentMode: .default, options: options) { (image, info) in
+        cachingImageManager.requestImage(for: imageAsset, targetSize: ImageSize.thumbnailSize, contentMode: .aspectFill, options: nil) { image, _ in
             resultHandler(image)
         }
     }
-    func startLoadThumbnail(for assets:[PHAsset]) {
-        cachingImageManager.startCachingImages(for: assets, targetSize: ImageSize.thumbnailSize, contentMode: .default, options: options)
+    func startLoadThumbnail(for assets: [PHAsset]) {
+        cachingImageManager.startCachingImages(for: assets, targetSize: ImageSize.thumbnailSize, contentMode: .aspectFill, options: nil)
     }
 
+    func stopCachingThumbnail(for assets: [PHAsset]) {
+        cachingImageManager.stopCachingImages(for: assets, targetSize: ImageSize.thumbnailSize, contentMode: .aspectFill, options: nil)
+    }
     func stopCachingImage() {
         cachingImageManager.stopCachingImagesForAllAssets()
         
