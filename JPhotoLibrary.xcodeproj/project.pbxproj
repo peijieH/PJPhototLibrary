@@ -11,7 +11,7 @@
 		2351B53E1E77C05A0040DC23 /* select@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 2351B53A1E77C05A0040DC23 /* select@3x.png */; };
 		2351B5411E77DE770040DC23 /* back@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 2351B53F1E77DE770040DC23 /* back@2x.png */; };
 		2351B5421E77DE770040DC23 /* back@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 2351B5401E77DE770040DC23 /* back@3x.png */; };
-		235520691E389369000D1A3B /* AlbumListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 235520681E389369000D1A3B /* AlbumListView.swift */; };
+		235520691E389369000D1A3B /* AlbumTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 235520681E389369000D1A3B /* AlbumTable.swift */; };
 		2381029F1E78E23A00F0C8D3 /* unSelect@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 2381029D1E78E23A00F0C8D3 /* unSelect@2x.png */; };
 		238102A01E78E23A00F0C8D3 /* unSelect@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 2381029E1E78E23A00F0C8D3 /* unSelect@3x.png */; };
 		238102A21E79091E00F0C8D3 /* SelectImageCenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 238102A11E79091E00F0C8D3 /* SelectImageCenter.swift */; };
@@ -30,7 +30,6 @@
 		8FABD8ED1E124E3600CB8101 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8FABD8EB1E124E3600CB8101 /* LaunchScreen.storyboard */; };
 		8FABD8F81E124E3600CB8101 /* JPhotoLibraryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FABD8F71E124E3600CB8101 /* JPhotoLibraryTests.swift */; };
 		8FABD9031E124E3600CB8101 /* JPhotoLibraryUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FABD9021E124E3600CB8101 /* JPhotoLibraryUITests.swift */; };
-		8FABD9141E12622800CB8101 /* PhotoGroupProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FABD9131E12622800CB8101 /* PhotoGroupProtocol.swift */; };
 		8FABD9161E126FBD00CB8101 /* PhotoLibraryKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FABD9151E126FBD00CB8101 /* PhotoLibraryKit.swift */; };
 /* End PBXBuildFile section */
 
@@ -56,7 +55,7 @@
 		2351B53A1E77C05A0040DC23 /* select@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "select@3x.png"; sourceTree = "<group>"; };
 		2351B53F1E77DE770040DC23 /* back@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "back@2x.png"; sourceTree = "<group>"; };
 		2351B5401E77DE770040DC23 /* back@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "back@3x.png"; sourceTree = "<group>"; };
-		235520681E389369000D1A3B /* AlbumListView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AlbumListView.swift; sourceTree = "<group>"; };
+		235520681E389369000D1A3B /* AlbumTable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AlbumTable.swift; sourceTree = "<group>"; };
 		2381029D1E78E23A00F0C8D3 /* unSelect@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "unSelect@2x.png"; sourceTree = "<group>"; };
 		2381029E1E78E23A00F0C8D3 /* unSelect@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "unSelect@3x.png"; sourceTree = "<group>"; };
 		238102A11E79091E00F0C8D3 /* SelectImageCenter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SelectImageCenter.swift; sourceTree = "<group>"; };
@@ -83,7 +82,6 @@
 		8FABD8FE1E124E3600CB8101 /* JPhotoLibraryUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = JPhotoLibraryUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		8FABD9021E124E3600CB8101 /* JPhotoLibraryUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JPhotoLibraryUITests.swift; sourceTree = "<group>"; };
 		8FABD9041E124E3600CB8101 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		8FABD9131E12622800CB8101 /* PhotoGroupProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoGroupProtocol.swift; sourceTree = "<group>"; };
 		8FABD9151E126FBD00CB8101 /* PhotoLibraryKit.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoLibraryKit.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -185,9 +183,8 @@
 		8FABD9121E12622800CB8101 /* Class */ = {
 			isa = PBXGroup;
 			children = (
-				8FABD9131E12622800CB8101 /* PhotoGroupProtocol.swift */,
 				8FABD9151E126FBD00CB8101 /* PhotoLibraryKit.swift */,
-				235520681E389369000D1A3B /* AlbumListView.swift */,
+				235520681E389369000D1A3B /* AlbumTable.swift */,
 				23DCD5131E39F801005EB1BD /* ConvenienceConstant.swift */,
 				238975201E48C012005B95A5 /* AlbumCollectionView.swift */,
 				23B478081E6D476B00262D66 /* UIKitExtension.swift */,
@@ -343,14 +340,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				238102A21E79091E00F0C8D3 /* SelectImageCenter.swift in Sources */,
-				8FABD9141E12622800CB8101 /* PhotoGroupProtocol.swift in Sources */,
 				23DCD5141E39F801005EB1BD /* ConvenienceConstant.swift in Sources */,
 				23B478091E6D476B00262D66 /* UIKitExtension.swift in Sources */,
 				8FABD8E51E124E3600CB8101 /* ViewController.swift in Sources */,
 				8FABD8E31E124E3600CB8101 /* AppDelegate.swift in Sources */,
 				8FABD9161E126FBD00CB8101 /* PhotoLibraryKit.swift in Sources */,
 				238975211E48C012005B95A5 /* AlbumCollectionView.swift in Sources */,
-				235520691E389369000D1A3B /* AlbumListView.swift in Sources */,
+				235520691E389369000D1A3B /* AlbumTable.swift in Sources */,
 				23B4780B1E6D7E9200262D66 /* AlbumBrowser.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -449,7 +445,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -494,7 +490,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";

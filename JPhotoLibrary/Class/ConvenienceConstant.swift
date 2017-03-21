@@ -9,6 +9,16 @@
 import Foundation
 import UIKit
 
+// MARK: thumbnail size
+let thumbnailWidth = (UIScreen.main.bounds.size.width - 6)/4
+let thumbnailSize = CGSize.init(width: thumbnailWidth, height: thumbnailWidth)
+
+struct ImageSize {
+    static var thumbnailSize: CGSize{
+        return CGSize.init(width: thumbnailWidth * UIScreen.main.scale, height: thumbnailWidth * UIScreen.main.scale)
+    }
+}
+
 struct ConstantValue {
     static let screenBounds = UIScreen.main.bounds
     static let screenWidth = screenBounds.size.width

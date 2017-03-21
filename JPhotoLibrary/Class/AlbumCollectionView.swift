@@ -64,16 +64,19 @@ class AlbumCollectionViewController : UIViewController {
         updateCachingAsset()
     }
     
+    
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-        
         assetManager.stopCachingImage()
     }
     
     deinit {
-        NotificationCenter.default.removeObserver(self, name: .UpdateAlbumThumbnailCellData, object: nil)
         SelectImageCenter.shareManager.cleanData()
+        NotificationCenter.default.removeObserver(self, name: .UpdateAlbumThumbnailCellData, object: nil)
+        NotificationCenter.default.removeObserver(self, name: .UpdateSelectNum, object: nil)
+        
     }
+    
 }
 
 class BottomBarView : UIView {
@@ -90,6 +93,7 @@ class BottomBarView : UIView {
         sendBt.setTitleColor(UIColor.btTitleSelectColor, for: .normal)
         sendBt.setTitleColor(UIColor.btTitleDisableColor, for: .disabled)
         sendBt.addTarget(self, action: #selector(sendAction(sender:)), for: .touchUpInside)
+        sendBt.isEnabled = false
         
         sendNum = UILabel.init(frame: CGRect.init(x: frame.width - sendBtWidth - 10 - 3 - 60, y: 8, width: 60, height: sendBtHeight - 5))
         sendNum.textAlignment = .right
@@ -105,12 +109,26 @@ class BottomBarView : UIView {
     }
     
     @objc fileprivate func updateSendNumAction(notify: NSNotification) {
+        if notify.object as! Int == 0 {
+            self.sendBt.isEnabled = false
+        } else {
+            self.sendBt.isEnabled = true
+        }
+        
         self.sendNum.text = String.init(format: "%@", notify.object as! Int == 0 ? "" :  "(" + (notify.object as! Int).description + ")")
     }
     
     func sendAction(sender: UIButton) {
-        sender.isEnabled = false
+        PJPhotoAlbum.shareCenter.selectItems = SelectImageCenter.shareManager.selectArray
+        ShareNavigationControlle.shareNav.nav.dismiss(animated: true, completion: nil)
+        
     }
+    
+
+    
+    
+    
+    
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")

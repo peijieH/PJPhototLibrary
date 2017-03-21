@@ -8,17 +8,22 @@
 
 import Foundation
 import UIKit
+import Photos
+
+//MARK: calling and callback
+public extension UIViewController {
+    public func showPJPhotoAlbum() {
+        PJPhotoAlbum.authorizedAction(parentVC: self)
+    }
+}
 
 extension UIImage {
     /// cropRect 移动坐标并裁剪图片 默认nil target 裁剪的大小
     func cropImage(cropRect:CGRect? = nil, targetSize: CGSize) -> UIImage? {
         UIGraphicsBeginImageContextWithOptions(targetSize, false, UIScreen.main.scale)
         if cropRect != nil {
-            let newCGImage = self.cgImage?.cropping(to: cropRect!)
-            guard newCGImage != nil else{
-                return nil
-            }
-            let newImage = UIImage.init(cgImage: newCGImage!)
+            guard let  newCGImage = self.cgImage?.cropping(to: cropRect!) else { return nil }
+            let newImage = UIImage.init(cgImage: newCGImage)
             newImage.draw(in: CGRect.init(origin: CGPoint.zero, size: targetSize))
         } else {
             self.draw(in: CGRect.init(origin: CGPoint.zero, size: targetSize))
@@ -55,8 +60,6 @@ extension UIColor {
     class var navViewBackgroundColor: UIColor {
             return UIColor.init(white: 0.1, alpha: 0.7)
     }
-    
-    
 }
 
 func imageResize(image: UIImage, size: CGSize) -> UIImage? {

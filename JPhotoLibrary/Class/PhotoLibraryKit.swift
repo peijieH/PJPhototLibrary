@@ -10,27 +10,43 @@ import Foundation
 import Photos
 
 
-// MARK: cell size
-let thumbnailWidth = (UIScreen.main.bounds.size.width - 6)/4
-let thumbnailSize = CGSize.init(width: thumbnailWidth, height: thumbnailWidth)
-
-struct ImageSize {
-    static var thumbnailSize: CGSize{
-            return CGSize.init(width: thumbnailWidth * UIScreen.main.scale, height: thumbnailWidth * UIScreen.main.scale)
-    }
-    
-    static var screenSize: CGSize = CGSize.init(width: ConstantValue.screenWidth, height: ConstantValue.screenHeight)
+class ShareNavigationControlle {
+    static let shareNav = ShareNavigationControlle()
+    let nav = UINavigationController.init()
 }
 
-class LibAuthorization {
+class PJPhotoAlbum {
+    public static let shareCenter = PJPhotoAlbum()
+    let assetManager: AssetManager = AssetManager()
+    var selectResult: (([PHAsset]) -> Void)? = nil
+    var selectItems: [PHAsset]? = nil {
+        didSet {
+            callback!()
+        }
+    }
+    var callback: (() -> Void)? = nil
+    var count: Int {
+        if selectItems != nil {
+            return (selectItems?.count)!
+        } else {
+            return 0
+        }
+    }
+    
+    func getImage(for index: Int, resultHandler: @escaping (UIImage?) -> Void) {
+        guard selectItems !=  nil else { return }
+        assetManager.getImage(for: selectItems![index], resultHandler: resultHandler)
+    }
+    
     class func authorizedAction(parentVC: UIViewController) {
         switch PHPhotoLibrary.authorizationStatus() {
         case .authorized:
             let albumVC = AlbumListViewController.init()
-            let navVC = UINavigationController.init(rootViewController: albumVC)
-            parentVC.present(navVC, animated: true, completion: nil)
+            ShareNavigationControlle.shareNav.nav.viewControllers = [albumVC]
+            parentVC.present(ShareNavigationControlle.shareNav.nav, animated: true, completion: nil)
         case .denied, .restricted:
             alertView(parentVC: parentVC, title: "访问相册", message: "无权限访问")
+            
         case .notDetermined:
             PHPhotoLibrary.requestAuthorization({ (status) in
                 authorizedAction(parentVC: parentVC)
@@ -40,73 +56,41 @@ class LibAuthorization {
 }
 
 class PhotoDataSource {
-    let allCollectionArray = allCollectionData()
     
-}
-
-func allCollectionData() -> [PHAssetCollection] {
-    var allSmartCollectionArray: [PHAssetCollection] = []
-    PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .albumRegular, options: nil).enumerateObjects({ (assetCollection, index, stop) in
-        allSmartCollectionArray.append(assetCollection)
-    })
-
-    
-    PHAssetCollection.fetchTopLevelUserCollections(with: nil).enumerateObjects({ (collectionList, index, stop) in
-        if collectionList is PHAssetCollection {
-            allSmartCollectionArray.append(collectionList as! PHAssetCollection)
-        }
-    })
-
-    let allSmartCollectionSortArray: [PHAssetCollection] = allSmartCollectionArray.sorted {
-        
-        $0.estimatedAssetCount > $1.estimatedAssetCount
-    }
-    return allSmartCollectionSortArray
-
-}
-
-func collectionImageData(collection: PHAssetCollection) -> [PHAsset]{
-    let result = PHAsset.fetchAssets(in: collection, options: nil)
-    var assetArray: [PHAsset] = []
-    result.enumerateObjects({ (assetObj, index, stop) in
-        assetArray.append(assetObj)
-    })
-    return assetArray
-}
-
-func setLibImage(imageAsset: PHAsset, imageQuality: PHImageRequestOptionsDeliveryMode, resultHandler: @escaping (UIImage?) -> Void) {
-    let options = PHImageRequestOptions.init()
-    options.deliveryMode = imageQuality
-    options.normalizedCropRect = CGRect.init(x: 0, y: 0, width: ImageSize.thumbnailSize.width, height: ImageSize.thumbnailSize.height)
-    PHImageManager.default().requestImage(for: imageAsset, targetSize: ImageSize.thumbnailSize, contentMode: .default, options: options) { (image, info) in
-        resultHandler(image)
-    }
-}
-
-func collectionLastImage(collection: PHAssetCollection, imageQuality: PHImageRequestOptionsDeliveryMode, resultHandler: @escaping (UIImage?) -> Void){
-    let fetchResult = PHAsset.fetchAssets(in: collection, options: nil).lastObject
-    if fetchResult != nil {
-        setLibImage(imageAsset: fetchResult!, imageQuality: imageQuality){
-            image in resultHandler(image)
-        }
-    }else {
-        resultHandler(nil)
-    }
-}
-
-func setBrowserImage(imageAsset: PHAsset, imageQuality: PHImageRequestOptionsDeliveryMode, resultHandler: @escaping (UIImage?) -> Void) {
-    let options = PHImageRequestOptions.init()
-    options.deliveryMode = imageQuality
-    PHCachingImageManager.default().requestImage(for: imageAsset, targetSize: ImageSize.screenSize, contentMode: .default, options: options) { (image, info) in
-        resultHandler(image)
+    class func getAllPhoto() -> PHFetchResult<PHAsset> {
+        let allPhotosOptions = PHFetchOptions()
+        allPhotosOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: true)]
+        return PHAsset.fetchAssets(with: allPhotosOptions)
     }
     
+    class func getSamrtAlbums() -> PHFetchResult<PHAssetCollection> {
+        return PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .albumRegular, options: nil)
+    }
+    
+    class func getUserCollections() -> PHFetchResult<PHCollection> {
+        return PHCollectionList.fetchTopLevelUserCollections(with: nil)
+    }
+    
+    class func getPHAsset(fetchCollection: PHFetchResult<PHCollection>) -> ([String], [PHFetchResult<PHAsset>], [Int]) {
+        var sumCollection: [PHFetchResult<PHAsset>] = []
+        var sumCollectionName: [String] = []
+        var sumCollectionCount: [Int] = []
+        fetchCollection.enumerateObjects({ (eachCollection, _, _) in
+            guard let tempCollection = eachCollection as? PHAssetCollection
+                else { fatalError("error: expected asset collection") }
+            
+            sumCollection.append(PHAsset.fetchAssets(in: tempCollection, options: nil))
+            sumCollectionName.append(tempCollection.localizedTitle ?? "")
+            if tempCollection.estimatedAssetCount == NSNotFound {
+                sumCollectionCount.append(0)
+            } else {
+                sumCollectionCount.append(tempCollection.estimatedAssetCount)
+            }
+            
+        })
+        return (sumCollectionName, sumCollection, sumCollectionCount)
+    }
 }
-
-func imageCount(collection: PHAssetCollection) -> Int {
-    return PHAsset.fetchAssets(in: collection, options: nil).count
-}
-
 
 //MARK: preheat load image
 
@@ -142,6 +126,13 @@ class AssetManager {
             resultHandler(image)
         }
     }
+    
+    func getImageData(for asset: PHAsset, resultHandler: @escaping (Data?) -> Void) {
+        cachingImageManager.requestImageData(for: asset, options: options) { (data, _, _, resultInfo) in
+            resultHandler(data)
+        }
+    }
+    
     func startLoadThumbnail(for assets: [PHAsset]) {
         cachingImageManager.startCachingImages(for: assets, targetSize: targetSize, contentMode: .aspectFill, options: options)
     }
@@ -149,13 +140,11 @@ class AssetManager {
     func stopCachingThumbnail(for assets: [PHAsset]) {
         cachingImageManager.stopCachingImages(for: assets, targetSize: targetSize, contentMode: .aspectFill, options: options)
     }
+    
     func stopCachingImage() {
         cachingImageManager.stopCachingImagesForAllAssets()
         
     }
-    
-    
-    
 }
 
 

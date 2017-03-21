@@ -9,6 +9,7 @@
 import Foundation
 import UIKit
 import Photos
+import CoreImage
 
 enum ImageScaleValue: CGFloat {
     case defaultScale = 1.0
@@ -33,7 +34,7 @@ struct AlbumListViewConstantValue {
     
     static let originBtFrame = CGRect.init(x: ConstantValue.screenWidth/2 - 32, y: 0, width: 55, height: 44)
     
-    static let storageFrame = CGRect.init(x: ConstantValue.screenWidth/2 - 32 - 62 , y: 0, width: 30, height: 44)
+    static let storageFrame = CGRect.init(x: ConstantValue.screenWidth/2 - 32 + 55 , y: 0, width: 44, height: 44)
 }
 
 class BrowserCollectionVC: UIViewController {
@@ -68,6 +69,7 @@ class BrowserCollectionVC: UIViewController {
         navView?.selectBt?.addTarget(self, action: #selector(selectImageAction(sender:)), for: .touchUpInside)
         
         bottomBarView = BrowserBottomBarView.init(frame: AlbumListViewConstantValue.browserBottomBarViewFrame)
+        bottomBarView.selectOriginDelegate = self
         
         self.view.addSubview(bottomBarView!)
         self.view.addSubview(navView!)
@@ -112,6 +114,11 @@ class BrowserCollectionVC: UIViewController {
     /// get visible cell index
     func getVisibleItemIndex() -> Int{
         return lroundf(Float((browserCollectionView?.contentOffset.x)!/ConstantValue.screenWidth))
+    }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self, name: .UpdateAlbumThumbnailCellData, object: nil)
+        NotificationCenter.default.removeObserver(self, name: .UpdateSelectNum, object: nil)
     }
 }
 
@@ -193,8 +200,7 @@ class BrowserBottomBarView: UIView {
         sendNum.text = String.init(format: "%@", SelectImageCenter.shareManager.selectArray.count == 0 ? "" :  "(" + SelectImageCenter.shareManager.selectArray.count.description + ")")
         
         storageCount = UILabel.init(frame: AlbumListViewConstantValue.storageFrame)
-        storageCount.attributedText = NSAttributedString.init(string: "", attributes: [NSFontAttributeName: UIFont.systemFont(ofSize: 14), NSForegroundColorAttributeName: UIColor.white])
-        
+        storageCount.attributedText = NSAttributedString.init(string: "", attributes: [NSFontAttributeName: UIFont.systemFont(ofSize: 13), NSForegroundColorAttributeName: UIColor.white])
         
         super.init(frame: frame)
         self.addSubview(originBt)
@@ -230,6 +236,13 @@ class BrowserBottomBarView: UIView {
 }
 
 
+protocol CollectionViewCellTouchDelegate {
+    func touchTheView()
+}
+
+protocol SelectOriginDataDelegate {
+    func selectOriginData(isSelect: Bool)
+}
 
 extension BrowserCollectionVC : UICollectionViewDataSource,  CollectionViewCellTouchDelegate, SelectOriginDataDelegate {
     //MARK: datasouce
@@ -260,32 +273,22 @@ extension BrowserCollectionVC : UICollectionViewDataSource,  CollectionViewCellT
     }
     //MARK: select origin date delegate
     func selectOriginData(isSelect: Bool) {
+        SelectImageCenter.shareManager.isSelectOriginData = isSelect
         if isSelect {
-            
+            getImageStorageSize(asset: assetCollectionArray[getVisibleItemIndex()], resultHandler: { sizeString in
+                self.bottomBarView.storageCount.attributedText = NSAttributedString.init(string: sizeString, attributes: [NSFontAttributeName: UIFont.systemFont(ofSize: 13), NSForegroundColorAttributeName: UIColor.white])
+            })
         } else {
-            
+            self.bottomBarView.storageCount.attributedText = NSAttributedString.init(string: "", attributes: [NSFontAttributeName: UIFont.systemFont(ofSize: 13), NSForegroundColorAttributeName: UIColor.white])
         }
     }
-    
-    
 }
 
-protocol CollectionViewCellTouchDelegate {
-    func touchTheView()
-}
 
-protocol SelectOriginDataDelegate {
-    func selectOriginData(isSelect: Bool)
-}
 
 extension BrowserCollectionVC: UICollectionViewDelegate {
-    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        
-    }
     
-    func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        
-    }
+    //MARK: did scroll
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         let index = getVisibleItemIndex()
         if SelectImageCenter.shareManager.collectionArray[index] {
@@ -293,16 +296,31 @@ extension BrowserCollectionVC: UICollectionViewDelegate {
         } else {
             navView?.selectBt?.isSelected = false
         }
-        
         // asset image caching
         updateCachingAsset()
         
-    }
-    
-    func getImageStorageSize(asset: PHAsset) {
+        self.bottomBarView.originBt.isSelected = SelectImageCenter.shareManager.isSelectOriginData
         
+        if SelectImageCenter.shareManager.isSelectOriginData {
+            getImageStorageSize(asset: assetCollectionArray[getVisibleItemIndex()], resultHandler: { sizeString in
+                self.bottomBarView.storageCount.attributedText = NSAttributedString.init(string: sizeString, attributes: [NSFontAttributeName: UIFont.systemFont(ofSize: 13), NSForegroundColorAttributeName: UIColor.white])
+            })
+        } else {
+            self.bottomBarView.storageCount.attributedText = NSAttributedString.init(string: "", attributes: [NSFontAttributeName: UIFont.systemFont(ofSize: 13), NSForegroundColorAttributeName: UIColor.white])
+        }
     }
     
+    func getImageStorageSize(asset: PHAsset, resultHandler: @escaping (String) -> Void) {
+        assetManager.getImageData(for: asset) { data in
+            guard data != nil else { return }
+            let storageSize = Float((data?.count)!)/(1024.0)
+            if storageSize > 1000 {
+                 resultHandler(String.init(format: "%0.2fM", storageSize/1024.0))
+            } else {
+                 resultHandler(String.init(format: "%dK", Int(storageSize)))
+            }
+        }
+    }
     
     fileprivate func updateCachingAsset () {
         let visibleRect = CGRect.init(origin: browserCollectionView.contentOffset, size: browserCollectionView.bounds.size)
@@ -324,15 +342,12 @@ extension BrowserCollectionVC: UICollectionViewDelegate {
         assetManager.stopCachingThumbnail(for: oldAsset)
         assetManager.startLoadThumbnail(for: newAsset)
         lastPreheatRect = prheatRect
-        
     }
     
    fileprivate func getItems(for rect: CGRect) -> [Int]?{
         let layoutAttributes = browserCollectionView.collectionViewLayout.layoutAttributesForElements(in: rect)
         return layoutAttributes?.map { $0.indexPath.row }
     }
-
-    
 }
 
 //MARK:
@@ -346,11 +361,7 @@ class BrowserCollectionView: UICollectionView {
         self.isPagingEnabled = true
         
     }
-    
-    
 }
-
-
 
 class BrowserCollectionCell: UICollectionViewCell {
     var imageView: UIImageView
@@ -367,8 +378,8 @@ class BrowserCollectionCell: UICollectionViewCell {
         get {
             return imageView.image!
         }
-
     }
+    
     override init(frame: CGRect) {
         imageView = UIImageView.init()
         imageView.isUserInteractionEnabled = true
@@ -389,7 +400,6 @@ class BrowserCollectionCell: UICollectionViewCell {
         imageView.addGestureRecognizer(tapGestureDouble)
         imageScrollView.addGestureRecognizer(tapGestureSingle)
         imageScrollView.addGestureRecognizer(tapGestureDouble)
-        
     }
     
     required init?(coder aDecoder: NSCoder) {
