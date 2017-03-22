@@ -1,12 +1,32 @@
 # PJPhototLibrary
-现在先让这个lib在这里占个位😁，以前不想写开源库就是太耗费精力了，真佩服那些写了好多开源库还一直维护的人
-\n
-swift3.0 \n
 
-这个库的主要功能是类似微信，支付宝的从照片库中选取单或多张图片数据发送上传等，具体看下微信的照片功能就行了
+PJPhotoLibrary is a lightweight and pure Swift implemented library for viewing and selecting image from the device photo library. You can select some images that you want conveniencely thought a few line code.For more details, please see the WeChat's photo library.
 
 
+## Features
 
+- [x] Use less memory when load the photo library
+- [x] The photo libaray have a good performance
 
+```swift
+viewController.showPJPhotoAlbum() //load the photo library
+let count = PJPhotoAlbum.shareCenter.count //select image num
+PJPhotoAlbum.shareCenter.getImage(for index: Int, resultHandler: @escaping (UIImage?) -> Void) //callback
+```
 
-这个lib几天前创建好，但过年没动工，这两天开始动工，大概要能使用还要过几天，我每天都是更新代码push上来，可以使用后会用cocoapods填加lib，然后项目使用就方便了，如果有兴趣欢迎一起写，在issue说下就行了😁
+## Requirements
+
+- iOS 8.0+ 
+- Swift 3.0+
+
+### Future
+
+The cocoapods and swift manager Will  be supported soon
+
+### Contact
+Send the mail to hhpeijie@163.com
+
+### License
+
+PJPhotoLibrary is released under the MIT license. See LICENSE for details.
+
